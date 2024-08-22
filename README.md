@@ -94,20 +94,20 @@ Next I went through the code base and familiarized myself with how this applicat
 implement my solution for this task.
 
 One of the first things that I noticed in this project was that there are no Javadocs. Being that this is a Coding 
-challenge, I will refrain from editing the existing code and adding any updates where i may see fit. 
+challenge, I will refrain from editing the existing code and adding any updates where I may see fit. 
 Such as:
 - adding in documentation to classes and methods. 
 - Doing data validation within the existing service to check that the employee data is not empty or "invalid" or if an
 employee already exists with such data. 
 - Adding/Implementing any new frameworks to help with the data structure (i.e. JPA Hibernate, to help with the relationships and automatic data fetching for employee records).
-- Updating the existing Controller to use @RequestMapping("/employee") in order to cut down on repetitive pathing for each endpoint.
+- Updating the existing Controller to use `@RequestMapping("/employee")` in order to cut down on repetitive pathing for each endpoint.
 
 #### Plan of attack
 In order to complete this task, the instructions state that i must declare a new REST Endpoint and Type.
 I was planning on creating a new controller specifically for the Reporting Structure, so that if there were any other
-actions needed for a Reporting Structure they could be added there, however after looking at this, i think im going to
+actions needed for a Reporting Structure they could be added there, however after looking at this, I think im going to
 just append into the existing classes because the reporting structure cannot exist without employees, and it should be 
-under "/employee/{id}/reporting-structure".
+under `/employee/{id}/reporting-structure`.
 To achieve this i will need to start by creating the Type, then update the Service Interface, then implement the service
 call and lastly expose the logic via the controller.
 
@@ -129,8 +129,8 @@ the service itself is working and returning expected data, as well as the contro
 One thing to note is that the Task Description states "return the fully filled out ReportingStructure". In my eyes, the 
 Employee itself should have already of had the Direct Reporter Employees relationships filled out, the service layer
 shouldn't have to do that, but in order to achieve that data displaying appropriately in the JSON response, I would have
-had to of about doubled the computing time to clear and reset the Employee Lists after i fetched for the Employee Data. 
-Whereas if this exercise was using JPA, there would not be a need to re-call the "getEmployeeById" for each employee, as
+had to of about doubled the computing time to clear and reset the Employee Lists after I fetched for the Employee Data. 
+Whereas if this exercise was using JPA, there would not be a need to re-call the `getEmployeeById` for each employee, as
 its data would already be on the fetched Employee object. 
 
 Having some more explicit instructions or definitions as to what the "fully filled out Reporting Structure" Should have
@@ -141,12 +141,12 @@ information attached to the employee its returning.
 #### Refactor Notes
 Refactor went smooth, just moved the contents into new files. 
 Creating the Unit test were a bit tricky, however. Being used to JUnit 5 and Mockito, I dove right in with @ExtendsWith
-and the junit juipter api @Test annotation. I wrote a couple simple tests and when I went to run them, it said that 
-gradle could not find any tests :). So I found out then that I was using the wrong @Test annotation. 
+and the junit juipter api `@Test` annotation. I wrote a couple simple tests and when I went to run them, it said that 
+gradle could not find any tests :). So I found out then that I was using the wrong `@Test` annotation. 
 
 After updating it, both test failed because the mocking was throwing a Null Pointer Exception on the EmployeeRepository, 
-indicating that there was an issue mocking/injecting via the @ExtendsWith. This lead met to do a quick google search, 
-only to find that with JUnit 4, you have to use @RunWith, so I updated it. 
+indicating that there was an issue mocking/injecting via the `@ExtendsWith`. This lead met to do a quick google search, 
+only to find that with JUnit 4, you have to use `@RunWith`, so I updated it. 
 Then the test were failing because I was not able to inject a mock that was an interface. I tried to look up other solutions
 for this issue, but I just defaulted to using the actual Implementation here instead, as that is in fact what the unit
 tests are supposed to be testing. I would be very interested to learn if there was a way to design the tests like I did
@@ -167,37 +167,45 @@ similarly to the Employee structure. Data Type, Interface, Service, Controller, 
 guide, this task should be simple to complete. 
 For the Type itself, the salary could be a String, Integer, Double or any other Boxed class, like BigDouble for instance. 
 For simplicity’s sake, I think I am going to just use an `int` for the Salary, assuming that each Compensation record 
-should have Some data, its okay that `int` isnt nullable. If there were supposed to be nullable Salaries i might have
+should have Some data, it's okay that `int` isn't nullable. If there were supposed to be nullable Salaries I might have
 gone with Integer instead.
 
 #### Afterthoughts
 This implementation was a bit easier as I followed the Employee Structure.  
-The only mis-understanding that i had was the repository method name, i was not sure if i was going to have to make it 
+The only mis-understanding that I had was the repository method name, I was not sure if I was going to have to make it 
 `findByEmployeeId`, `findByEmployeeWithEmployeeId` or `findByEmployee` for the Compensation. I went with `findByEmployeeId`
 at first in the hopes that Spring would have been smart enough to determine that it would have been for a child object. 
 However, after getting the logic done and running the existing Unit Tests, the context did not spin up, so I changed it
-to just be `findByEmployee` which, once i ran BootRun and put through some test data, it ended up working!
+to just be `findByEmployee` which, once I ran BootRun and put through some test data, it ended up working!
 
 The Employee Service did not have any data validation in it; check that the names are not empty, that the employee we
-are trying to create already exists, etc. However, i thought that for the compensation, i should add some validation like 
-that, so I am checking that for the employee that it is in fact a valid employee and id, and if its not it throws an 
-exception. To accommodate this, i implemented a Rest Controller Advice class, allowing any exceptions that get Thrown 
+are trying to create already exists, etc. However, I thought that for the compensation, I should add some validation like 
+that, so I am checking that for the employee that it is in fact a valid employee and id, and if it's not it throws an 
+exception. To accommodate this, I implemented a Rest Controller Advice class, allowing any exceptions that get Thrown 
 from any Bean generated in the context, to pass through this class first. This lets any exception that would be thrown
 be defined as anything but, or including, an Internal Server Error (500) error. In these cases, the issue is that the 
 data provided to the endpoint/service is not valid, the service is fine and running as expected, so we just return a 400 
 instead. If this application was using some kind of authentication, and we had a user or session check, we could throw a 
 custom exception and then catch it in this advice class and generate a nice error message with a 401 or 403, instead of a 500.
 
-One last thing that i noticed was that, if im doing it correctly, we have to interact with the Employee Repository to 
+One last thing that I noticed was that, if im doing it correctly, we have to interact with the Employee Repository to 
 fetch employee records a LOT. And instead of copying and pasting the same Autowired dependency and 3 lines of code to 
-fetch for it and validate that its not null, i could pull this out into another class. EmployeeServiceHelper for example.
+fetch for it and validate that it's not null, I could pull this out into another class. EmployeeServiceHelper for example.
 Of which would have a protected reference to the repository. Then each service that needed the EmployeeRepository or the 
 ability to fetch employees, could Inherit this class, and just call a helper method instead. Putting this common code in 
 one place. But for now im going to leave it the way it is, with the same code in multiple places. I would be interested
 in learning if there is a more sophisticated way to solve this repetition issue. 
 
-I created a similar Test class as the EmployeeServiceImplTest for the Compensation Service. And also a separate Unit Test
+I created a similar Test class as the `EmployeeServiceImplTest` for the Compensation Service. And also a separate Unit Test
 Class to cover the negative workflows (exception handling).
+
+Probably should have updated the build.gradle file's version number and kept a log of the changes that were done. 
+
+## Final Thoughts
+This was a very fun exercise and I enjoyed being able to put my professional experience to work in a different context!
+This also gave me a chance to see other uses for Spring Boot, then what I have been exposed to with my current employer. 
+
+Thank you for this opportunity, and I am eager to hear feedback on the work I did for this Coding Challenge. 
 
 ## Authors
 Initial Commit Provided with the Mindex Java Code Challenge.  
