@@ -170,6 +170,32 @@ For simplicity’s sake, I think I am going to just use an `int` for the Salary,
 should have Some data, its okay that `int` isnt nullable. If there were supposed to be nullable Salaries i might have
 gone with Integer instead.
 
+#### Afterthoughts
+This implementation was a bit easier as I followed the Employee Structure.  
+The only mis-understanding that i had was the repository method name, i was not sure if i was going to have to make it 
+`findByEmployeeId`, `findByEmployeeWithEmployeeId` or `findByEmployee` for the Compensation. I went with `findByEmployeeId`
+at first in the hopes that Spring would have been smart enough to determine that it would have been for a child object. 
+However, after getting the logic done and running the existing Unit Tests, the context did not spin up, so I changed it
+to just be `findByEmployee` which, once i ran BootRun and put through some test data, it ended up working!
+
+The Employee Service did not have any data validation in it; check that the names are not empty, that the employee we
+are trying to create already exists, etc. However, i thought that for the compensation, i should add some validation like 
+that, so I am checking that for the employee that it is in fact a valid employee and id, and if its not it throws an 
+exception. To accommodate this, i implemented a Rest Controller Advice class, allowing any exceptions that get Thrown 
+from any Bean generated in the context, to pass through this class first. This lets any exception that would be thrown
+be defined as anything but, or including, an Internal Server Error (500) error. In these cases, the issue is that the 
+data provided to the endpoint/service is not valid, the service is fine and running as expected, so we just return a 400 
+instead. If this application was using some kind of authentication, and we had a user or session check, we could throw a 
+custom exception and then catch it in this advice class and generate a nice error message with a 401 or 403, instead of a 500.
+
+One last thing that i noticed was that, if im doing it correctly, we have to interact with the Employee Repository to 
+fetch employee records a LOT. And instead of copying and pasting the same Autowired dependency and 3 lines of code to 
+fetch for it and validate that its not null, i could pull this out into another class. EmployeeServiceHelper for example.
+Of which would have a protected reference to the repository. Then each service that needed the EmployeeRepository or the 
+ability to fetch employees, could Inherit this class, and just call a helper method instead. Putting this common code in 
+one place. But for now im going to leave it the way it is, with the same code in multiple places. I would be interested
+in learning if there is a more sophisticated way to solve this repetition issue. 
+
 ## Authors
 Initial Commit Provided with the Mindex Java Code Challenge.  
 Michael Szczepanski
