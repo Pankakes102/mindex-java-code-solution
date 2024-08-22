@@ -111,6 +111,33 @@ under "/employee/{id}/reporting-structure".
 To achieve this i will need to start by creating the Type, then update the Service Interface, then implement the service
 call and lastly expose the logic via the controller.
 
+#### Afterthoughts
+Per my plan of attack, I had altered the interface, service and controller. All under the guise/assumption that this
+endpoint and per the wording of the question/requirements should "have a new REST endpoint created for it". Interpreting
+that literally and only creating one Endpoint in an existing controller. 
+However, after implementing this, and running some tests locally via Insomnia:
+- Use Case 1, Run with Paul's eid, verify that there are 0.
+- Use Case 2, Run with Ringo's eid, verify that there are 2.
+- Use Case 3, Run with Jonh's eid, verify that there are 4.
+
+I was going to hop over into the /test directory and add me some tests, and the way that the tests are set up, led me
+to believe that I should Not in fact had appended to existing things and just went with my gut and create a new 
+Controller and Service for this functionality. 
+So I will commit these changes and then refactor accordingly. This should allow me to add in unit tests to verify that
+the service itself is working and returning expected data, as well as the controller is returning the expected JSON.
+
+One thing to note is that the Task Description states "return the fully filled out ReportingStructure". In my eyes, the 
+Employee itself should have already of had the Direct Reporter Employees relationships filled out, the service layer
+shouldn't have to do that, but in order to achieve that data displaying appropriately in the JSON response, I would have
+had to of about doubled the computing time to clear and reset the Employee Lists after i fetched for the Employee Data. 
+Whereas if this exercise was using JPA, there would not be a need to re-call the "getEmployeeById" for each employee, as
+its data would already be on the fetched Employee object. 
+
+Having some more explicit instructions or definitions as to what the "fully filled out Reporting Structure" Should have
+been would be beneficial. However, im going to assume that it means that the employee we fetched for and the number is 
+all that needs to be present, and that the list of Direct Reports does not also have to have all of the employee
+information attached to the employee its returning. 
+
 ## Authors
 Initial Commit Provided with the Mindex Java Code Challenge.
 Michael Szczepanski
