@@ -143,6 +143,7 @@ Refactor went smooth, just moved the contents into new files.
 Creating the Unit test were a bit tricky, however. Being used to JUnit 5 and Mockito, I dove right in with @ExtendsWith
 and the junit juipter api @Test annotation. I wrote a couple simple tests and when I went to run them, it said that 
 gradle could not find any tests :). So I found out then that I was using the wrong @Test annotation. 
+
 After updating it, both test failed because the mocking was throwing a Null Pointer Exception on the EmployeeRepository, 
 indicating that there was an issue mocking/injecting via the @ExtendsWith. This lead met to do a quick google search, 
 only to find that with JUnit 4, you have to use @RunWith, so I updated it. 
@@ -150,14 +151,25 @@ Then the test were failing because I was not able to inject a mock that was an i
 for this issue, but I just defaulted to using the actual Implementation here instead, as that is in fact what the unit
 tests are supposed to be testing. I would be very interested to learn if there was a way to design the tests like I did
 and use Interfaces instead of the Implemented Class. 
+
 The existing Employee Service Implementation Test confused me at first because it was not mocking anything out, and it 
 was also making requests with the Rest Template. I would consider these full Integration Tests rather than Unit tests
 I guess? Seeing that it did in fact spin up the entire Employee Service and Spring Boot Context. It was also a little
 confusing as to why there was only one test for all 3 pieces of functionality on the service, but like I had mentioned 
 before, im going to refrain from altering any of the existing code if possible. Wondering now if i should further refactor
-my unit tests and append Unit in some form to the existing tests and then mimic what he other ServiceImpl is doing to
+my unit tests and append Unit in some form to the existing tests and then mimic what the other ServiceImpl is doing to
 get better code coverage from a Rest Template standpoint. 
 
+### Task 2
+#### Plan of attack
+Being more familiar with the application and code base now, for this task i plan on implementing the necessary classes
+similarly to the Employee structure. Data Type, Interface, Service, Controller, Test. Using the Employee classes as a
+guide, this task should be simple to complete. 
+For the Type itself, the salary could be a String, Integer, Double or any other Boxed class, like BigDouble for instance. 
+For simplicity’s sake, I think I am going to just use an `int` for the Salary, assuming that each Compensation record 
+should have Some data, its okay that `int` isnt nullable. If there were supposed to be nullable Salaries i might have
+gone with Integer instead.
+
 ## Authors
-Initial Commit Provided with the Mindex Java Code Challenge.
+Initial Commit Provided with the Mindex Java Code Challenge.  
 Michael Szczepanski
