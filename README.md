@@ -196,6 +196,9 @@ ability to fetch employees, could Inherit this class, and just call a helper met
 one place. But for now im going to leave it the way it is, with the same code in multiple places. I would be interested
 in learning if there is a more sophisticated way to solve this repetition issue. 
 
+I created a similar Test class as the EmployeeServiceImplTest for the Compensation Service. And also a separate Unit Test
+Class to cover the negative workflows (exception handling).
+
 ## Authors
 Initial Commit Provided with the Mindex Java Code Challenge.  
 Michael Szczepanski
