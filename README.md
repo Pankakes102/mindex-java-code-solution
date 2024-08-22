@@ -143,6 +143,7 @@ Refactor went smooth, just moved the contents into new files.
 Creating the Unit test were a bit tricky, however. Being used to JUnit 5 and Mockito, I dove right in with @ExtendsWith
 and the junit juipter api @Test annotation. I wrote a couple simple tests and when I went to run them, it said that 
 gradle could not find any tests :). So I found out then that I was using the wrong @Test annotation. 
+
 After updating it, both test failed because the mocking was throwing a Null Pointer Exception on the EmployeeRepository, 
 indicating that there was an issue mocking/injecting via the @ExtendsWith. This lead met to do a quick google search, 
 only to find that with JUnit 4, you have to use @RunWith, so I updated it. 
@@ -150,14 +151,54 @@ Then the test were failing because I was not able to inject a mock that was an i
 for this issue, but I just defaulted to using the actual Implementation here instead, as that is in fact what the unit
 tests are supposed to be testing. I would be very interested to learn if there was a way to design the tests like I did
 and use Interfaces instead of the Implemented Class. 
+
 The existing Employee Service Implementation Test confused me at first because it was not mocking anything out, and it 
 was also making requests with the Rest Template. I would consider these full Integration Tests rather than Unit tests
 I guess? Seeing that it did in fact spin up the entire Employee Service and Spring Boot Context. It was also a little
 confusing as to why there was only one test for all 3 pieces of functionality on the service, but like I had mentioned 
 before, im going to refrain from altering any of the existing code if possible. Wondering now if i should further refactor
-my unit tests and append Unit in some form to the existing tests and then mimic what he other ServiceImpl is doing to
+my unit tests and append Unit in some form to the existing tests and then mimic what the other ServiceImpl is doing to
 get better code coverage from a Rest Template standpoint. 
 
+### Task 2
+#### Plan of attack
+Being more familiar with the application and code base now, for this task i plan on implementing the necessary classes
+similarly to the Employee structure. Data Type, Interface, Service, Controller, Test. Using the Employee classes as a
+guide, this task should be simple to complete. 
+For the Type itself, the salary could be a String, Integer, Double or any other Boxed class, like BigDouble for instance. 
+For simplicity’s sake, I think I am going to just use an `int` for the Salary, assuming that each Compensation record 
+should have Some data, its okay that `int` isnt nullable. If there were supposed to be nullable Salaries i might have
+gone with Integer instead.
+
+#### Afterthoughts
+This implementation was a bit easier as I followed the Employee Structure.  
+The only mis-understanding that i had was the repository method name, i was not sure if i was going to have to make it 
+`findByEmployeeId`, `findByEmployeeWithEmployeeId` or `findByEmployee` for the Compensation. I went with `findByEmployeeId`
+at first in the hopes that Spring would have been smart enough to determine that it would have been for a child object. 
+However, after getting the logic done and running the existing Unit Tests, the context did not spin up, so I changed it
+to just be `findByEmployee` which, once i ran BootRun and put through some test data, it ended up working!
+
+The Employee Service did not have any data validation in it; check that the names are not empty, that the employee we
+are trying to create already exists, etc. However, i thought that for the compensation, i should add some validation like 
+that, so I am checking that for the employee that it is in fact a valid employee and id, and if its not it throws an 
+exception. To accommodate this, i implemented a Rest Controller Advice class, allowing any exceptions that get Thrown 
+from any Bean generated in the context, to pass through this class first. This lets any exception that would be thrown
+be defined as anything but, or including, an Internal Server Error (500) error. In these cases, the issue is that the 
+data provided to the endpoint/service is not valid, the service is fine and running as expected, so we just return a 400 
+instead. If this application was using some kind of authentication, and we had a user or session check, we could throw a 
+custom exception and then catch it in this advice class and generate a nice error message with a 401 or 403, instead of a 500.
+
+One last thing that i noticed was that, if im doing it correctly, we have to interact with the Employee Repository to 
+fetch employee records a LOT. And instead of copying and pasting the same Autowired dependency and 3 lines of code to 
+fetch for it and validate that its not null, i could pull this out into another class. EmployeeServiceHelper for example.
+Of which would have a protected reference to the repository. Then each service that needed the EmployeeRepository or the 
+ability to fetch employees, could Inherit this class, and just call a helper method instead. Putting this common code in 
+one place. But for now im going to leave it the way it is, with the same code in multiple places. I would be interested
+in learning if there is a more sophisticated way to solve this repetition issue. 
+
+I created a similar Test class as the EmployeeServiceImplTest for the Compensation Service. And also a separate Unit Test
+Class to cover the negative workflows (exception handling).
+
 ## Authors
-Initial Commit Provided with the Mindex Java Code Challenge.
+Initial Commit Provided with the Mindex Java Code Challenge.  
 Michael Szczepanski
