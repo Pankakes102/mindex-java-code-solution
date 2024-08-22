@@ -84,3 +84,33 @@ Compensation from the persistence layer.
 
 ## Delivery
 Please upload your results to a publicly accessible Git repo. Free ones are provided by Github and Bitbucket.
+
+## Thoughts/Ideas
+### Task 1
+In preparation for Task 1, I had ran the application locally and entered the REST Endpoints into Insomnia so that I
+could more easily re-run the same calls over an over for local testing.
+
+Next I went through the code base and familiarized myself with how this application is set up and what to expect when I
+implement my solution for this task.
+
+One of the first things that I noticed in this project was that there are no Javadocs. Being that this is a Coding 
+challenge, I will refrain from editing the existing code and adding any updates where i may see fit. 
+Such as:
+- adding in documentation to classes and methods. 
+- Doing data validation within the existing service to check that the employee data is not empty or "invalid" or if an
+employee already exists with such data. 
+- Adding/Implementing any new frameworks to help with the data structure (i.e. JPA Hibernate, to help with the relationships and automatic data fetching for employee records).
+- Updating the existing Controller to use @RequestMapping("/employee") in order to cut down on repetitive pathing for each endpoint.
+
+#### Plan of attack
+In order to complete this task, the instructions state that i must declare a new REST Endpoint and Type.
+I was planning on creating a new controller specifically for the Reporting Structure, so that if there were any other
+actions needed for a Reporting Structure they could be added there, however after looking at this, i think im going to
+just append into the existing classes because the reporting structure cannot exist without employees, and it should be 
+under "/employee/{id}/reporting-structure".
+To achieve this i will need to start by creating the Type, then update the Service Interface, then implement the service
+call and lastly expose the logic via the controller.
+
+## Authors
+Initial Commit Provided with the Mindex Java Code Challenge.
+Michael Szczepanski
